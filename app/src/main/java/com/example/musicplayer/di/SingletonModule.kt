@@ -5,6 +5,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.example.musicplayer.R
+import com.example.musicplayer.exoplayer.MusicServiceConnection
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,4 +28,9 @@ object SingletonModule {
                 .error(R.drawable.ic_image)  // If something goes wrong, display image
                 .diskCacheStrategy(DiskCacheStrategy.DATA)  // Caches images with Glide
         )
+
+    @Provides
+    @Singleton
+    fun provideMusicServiceConnection(@ApplicationContext context: Context) =
+        MusicServiceConnection(context)
 }
