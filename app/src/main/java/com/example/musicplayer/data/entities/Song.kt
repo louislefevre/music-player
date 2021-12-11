@@ -1,7 +1,7 @@
 package com.example.musicplayer.data.entities
 
 data class Song(
-    val mediaId: Long = 0,
+    val mediaId: String = "",
     val title: String = "",
     val artist: String = "",
     //val album: String = "",

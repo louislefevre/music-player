@@ -33,7 +33,7 @@ class MainViewModel @Inject constructor(private val musicServiceConnection: Musi
                 super.onChildrenLoaded(parentId, children)
                 val items = children.map {
                     Song(
-                        it.mediaId!!.toLong(),
+                        it.mediaId!!,
                         it.description.title.toString(),
                         it.description.subtitle.toString(),
                         it.description.mediaUri.toString(),
@@ -47,7 +47,7 @@ class MainViewModel @Inject constructor(private val musicServiceConnection: Musi
 
     fun playOrToggleSong(mediaItem: Song, toggle: Boolean = false) {
         val isPrepared = playbackState.value?.isPrepared ?: false
-        val isSameSong = mediaItem.mediaId == curPlayingSong.value?.getLong(METADATA_KEY_MEDIA_ID)
+        val isSameSong = mediaItem.mediaId == curPlayingSong.value?.getString(METADATA_KEY_MEDIA_ID)
 
         if (isPrepared && isSameSong) {
             playbackState.value?.let { playbackState ->

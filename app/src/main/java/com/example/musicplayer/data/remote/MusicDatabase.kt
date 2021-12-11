@@ -1,10 +1,10 @@
 package com.example.musicplayer.data.remote
 
+import android.util.Log
 import com.example.musicplayer.data.entities.Song
 import com.example.musicplayer.misc.Constants.SONG_COLLECTION
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
-import java.lang.Exception
 
 class MusicDatabase {
 
@@ -15,6 +15,7 @@ class MusicDatabase {
         return try {
             songCollection.get().await().toObjects(Song::class.java)
         } catch (ex: Exception) {
+            Log.e("Database", "Failed to retrieve songs from database", ex)  // TODO: Replace with Timber
             emptyList()
         }
     }
