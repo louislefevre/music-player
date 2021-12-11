@@ -81,7 +81,12 @@ class FirebaseMusicSource @Inject constructor(private val musicDatabase: MusicDa
                 .putString(METADATA_KEY_DISPLAY_ICON_URI, song.coverUrl)
                 .build()
         }
-        state = STATE_INITIALISED
+
+        // Switch context so that listeners are called on main thread
+        // Fix for "SimpleExoPlayer: Player is accessed on the wrong thread"
+        withContext(Dispatchers.Main) {
+            state = STATE_INITIALISED
+        }
     }
 
     fun asMediaSource(dataSourceFactory: DefaultDataSource.Factory): ConcatenatingMediaSource {
