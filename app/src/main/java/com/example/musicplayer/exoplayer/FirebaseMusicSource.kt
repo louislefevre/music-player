@@ -40,16 +40,14 @@ class FirebaseMusicSource @Inject constructor(private val musicDatabase: MusicDa
     private val onReadyListeners = mutableListOf<(Boolean) -> Unit>()
     private var state: State = STATE_CREATED
         set(value) {
+            field = value
             if (value == STATE_INITIALISED || value == STATE_ERROR) {
                 // Ensures only one thread can access listeners at one time
                 synchronized(onReadyListeners) {
-                    field = value
                     onReadyListeners.forEach { listener ->
                         listener(state == STATE_INITIALISED)
                     }
                 }
-            } else {
-                field = value
             }
         }
 
