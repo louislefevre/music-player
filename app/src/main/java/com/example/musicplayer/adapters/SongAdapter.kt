@@ -1,11 +1,5 @@
 package com.example.musicplayer.adapters
 
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
 import com.example.musicplayer.R
 import com.example.musicplayer.data.entities.Song
@@ -19,13 +13,7 @@ import kotlinx.android.synthetic.main.list_item.view.tvSecondary
 class SongAdapter @AssistedInject constructor(
     private val glide: RequestManager,
     @Assisted private val onSongClicked: (Song) -> Unit
-) :
-    ListAdapter<Song, SongAdapter.SongViewHolder>(DiffCallback()) {
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_item, parent, false)
-        return SongViewHolder(view)
-    }
+) : BaseSongAdapter(R.layout.list_item) {
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         val song = getItem(position)
@@ -37,18 +25,6 @@ class SongAdapter @AssistedInject constructor(
             setOnClickListener {
                 onSongClicked(song)
             }
-        }
-    }
-
-    class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
-
-    private class DiffCallback : DiffUtil.ItemCallback<Song>() {
-        override fun areItemsTheSame(oldItem: Song, newItem: Song): Boolean {
-            return oldItem.mediaId == newItem.mediaId
-        }
-
-        override fun areContentsTheSame(oldItem: Song, newItem: Song): Boolean {
-            return oldItem.hashCode() == newItem.hashCode()
         }
     }
 }
