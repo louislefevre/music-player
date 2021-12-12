@@ -7,7 +7,7 @@ import com.bumptech.glide.RequestManager
 import com.example.musicplayer.R
 import com.example.musicplayer.adapters.SwipeSongAdapter
 import com.example.musicplayer.data.entities.Song
-import com.example.musicplayer.exoplayer.toSong
+import com.example.musicplayer.exoplayer.extensions.toSong
 import com.example.musicplayer.misc.Status.ERROR
 import com.example.musicplayer.misc.Status.LOADING
 import com.example.musicplayer.misc.Status.SUCCESS

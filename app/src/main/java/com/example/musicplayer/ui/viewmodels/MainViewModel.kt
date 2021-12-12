@@ -7,9 +7,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.musicplayer.data.entities.Song
 import com.example.musicplayer.exoplayer.MusicServiceConnection
-import com.example.musicplayer.exoplayer.isPlayEnabled
-import com.example.musicplayer.exoplayer.isPlaying
-import com.example.musicplayer.exoplayer.isPrepared
+import com.example.musicplayer.exoplayer.extensions.isPlayEnabled
+import com.example.musicplayer.exoplayer.extensions.isPlaying
+import com.example.musicplayer.exoplayer.extensions.isPrepared
 import com.example.musicplayer.misc.Constants.MEDIA_ROOT_ID
 import com.example.musicplayer.misc.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel

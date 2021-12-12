@@ -1,4 +1,4 @@
-package com.example.musicplayer.exoplayer
+package com.example.musicplayer.exoplayer.extensions
 
 import android.support.v4.media.MediaMetadataCompat
 import com.example.musicplayer.data.entities.Song
