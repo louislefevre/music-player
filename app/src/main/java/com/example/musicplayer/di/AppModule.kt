@@ -18,7 +18,7 @@ import javax.inject.Singleton
 // All dependencies live as long as the application does
 @Module
 @InstallIn(SingletonComponent::class)
-object SingletonModule {
+object AppModule {
 
     @Provides
     @Singleton  // Ensures only one Glide instance is created (a singleton)
