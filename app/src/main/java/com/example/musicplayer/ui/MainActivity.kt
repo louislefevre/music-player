@@ -14,6 +14,7 @@ import com.example.musicplayer.adapters.SwipeSongAdapter
 import com.example.musicplayer.data.entities.Song
 import com.example.musicplayer.exoplayer.extensions.isPlaying
 import com.example.musicplayer.exoplayer.extensions.toSong
+import com.example.musicplayer.misc.Constants.LAUNCHED_FROM_NOTIFICATION
 import com.example.musicplayer.misc.Status.*
 import com.example.musicplayer.ui.viewmodels.MainViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -73,6 +74,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         subscribeToObservers()
+
+        val navigateToSong = intent.getBooleanExtra(LAUNCHED_FROM_NOTIFICATION, false)
+        if (navigateToSong) {
+            navController.navigate(R.id.globalActionToSongFragment)
+        }
     }
 
     private fun hideBottomBar() {
