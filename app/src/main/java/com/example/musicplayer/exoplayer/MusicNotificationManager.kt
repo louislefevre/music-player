@@ -54,6 +54,9 @@ class MusicNotificationManager(
         }
 
         override fun createCurrentContentIntent(player: Player): PendingIntent? {
+            /* Requires 'android:launchMode' for the session activity to be set to "singleTop" in the manifest to work.
+             * Otherwise, a new activity will be created when clicking on the notification, rather than resuming
+             * the previous one. */
             return mediaController.sessionActivity
         }
 
