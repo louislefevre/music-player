@@ -4,6 +4,9 @@ import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.RequestManager
 import com.example.musicplayer.R
@@ -11,16 +14,11 @@ import com.example.musicplayer.adapters.SwipeSongAdapter
 import com.example.musicplayer.data.entities.Song
 import com.example.musicplayer.exoplayer.extensions.isPlaying
 import com.example.musicplayer.exoplayer.extensions.toSong
-import com.example.musicplayer.misc.Status.ERROR
-import com.example.musicplayer.misc.Status.LOADING
-import com.example.musicplayer.misc.Status.SUCCESS
+import com.example.musicplayer.misc.Status.*
 import com.example.musicplayer.ui.viewmodels.MainViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_main.ivCurSongImage
-import kotlinx.android.synthetic.main.activity_main.ivPlayPause
-import kotlinx.android.synthetic.main.activity_main.rootLayout
-import kotlinx.android.synthetic.main.activity_main.vpSong
+import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
 @AndroidEntryPoint  // If we inject into Android components, they must be annotated with this
@@ -28,7 +26,8 @@ class MainActivity : AppCompatActivity() {
 
     private val mainViewModel: MainViewModel by viewModels()
 
-    @Inject
+    private lateinit var navController: NavController
+
     lateinit var swipeSongAdapter: SwipeSongAdapter
 
     @Inject
@@ -41,7 +40,19 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        subscribeToObservers()
+
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
+        navController = navHostFragment.navController
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.songFragment -> hideBottomBar()
+                else -> showBottomBar()
+            }
+        }
+
+        swipeSongAdapter = SwipeSongAdapter {
+            navController.navigate(R.id.globalActionToSongFragment)
+        }
 
         vpSong.adapter = swipeSongAdapter
         vpSong.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -60,6 +71,20 @@ class MainActivity : AppCompatActivity() {
                 mainViewModel.playOrToggleSong(it, true)
             }
         }
+
+        subscribeToObservers()
+    }
+
+    private fun hideBottomBar() {
+        ivCurSongImage.isVisible = false
+        vpSong.isVisible = false
+        ivPlayPause.isVisible = false
+    }
+
+    private fun showBottomBar() {
+        ivCurSongImage.isVisible = true
+        vpSong.isVisible = true
+        ivPlayPause.isVisible = true
     }
 
     private fun switchViewPagerToCurrentSong(song: Song) {
