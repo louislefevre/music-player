@@ -13,6 +13,7 @@ import com.example.musicplayer.exoplayer.callbacks.MusicPlayerEventListener
 import com.example.musicplayer.exoplayer.callbacks.MusicPlayerNotificationListener
 import com.example.musicplayer.misc.Constants.MEDIA_ROOT_ID
 import com.example.musicplayer.misc.Constants.NETWORK_ERROR
+import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
@@ -84,7 +85,11 @@ class MusicService : MediaBrowserServiceCompat() {
             MusicPlayerNotificationListener(this),
         ) {
             // Called whenever the current song switches
-            curSongDuration = exoPlayer.duration
+            curSongDuration = if (exoPlayer.duration != C.TIME_UNSET) {
+                exoPlayer.duration
+            } else {
+                0L
+            }
         }
 
         val musicPlayBackPreparer = MusicPlaybackPreparer(firebaseMusicSource) {
