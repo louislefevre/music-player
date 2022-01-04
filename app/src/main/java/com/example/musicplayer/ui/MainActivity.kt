@@ -2,6 +2,7 @@ package com.example.musicplayer.ui
 
 import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isGone
@@ -53,33 +54,36 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        swipeSongAdapter = SwipeSongAdapter {
-            navController.navigate(R.id.globalActionToSongFragment)
-        }
-
-        player.vpSongInfo.adapter = swipeSongAdapter
-        player.vpSongInfo.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                if (playbackState?.isPlaying == true) {
-                    mainViewModel.playOrToggleSong(swipeSongAdapter.currentList[position])
-                } else {
-                    curPlayingSong = swipeSongAdapter.currentList[position]
+        swipeSongAdapter = SwipeSongAdapter { navigateToSongFragment() }
+        player.vpSongInfo.apply {
+            adapter = swipeSongAdapter
+            registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    super.onPageSelected(position)
+                    if (playbackState?.isPlaying == true) {
+                        mainViewModel.playOrToggleSong(swipeSongAdapter.currentList[position])
+                    } else {
+                        curPlayingSong = swipeSongAdapter.currentList[position]
+                    }
                 }
-            }
-        })
+            })
+        }
 
         setOnClickListeners()
         subscribeToObservers()
 
         val navigateToSong = intent.getBooleanExtra(LAUNCHED_FROM_NOTIFICATION, false)
         if (navigateToSong) {
-            navController.navigate(R.id.globalActionToSongFragment)
+            navigateToSongFragment()
         }
     }
 
     private fun setOnClickListeners() {
         player.apply {
+            rlSongContainer.setOnClickListener {
+                navigateToSongFragment()
+            }
+
             ibTogglePlaying.setOnClickListener {
                 curPlayingSong?.let {
                     mainViewModel.playOrToggleSong(it, true)
@@ -173,6 +177,10 @@ class MainActivity : AppCompatActivity() {
             player.vpSongInfo.currentItem = newItemIndex
             curPlayingSong = song
         }
+    }
+
+    private fun navigateToSongFragment() {
+        navController.navigate(R.id.globalActionToSongFragment)
     }
 
     private fun displayErrorSnackbar(message: String) {
