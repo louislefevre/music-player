@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                     xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                     xmlns:tools="http://schemas.android.com/tools"
+                                                     android:layout_width="match_parent"
+                                                     android:layout_height="match_parent"
+                                                     tools:context=".ui.MainActivity"
+                                                     tools:layout_height="?actionBarSize">
+
+    <LinearLayout
+        android:id="@+id/llBottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        app:layout_behavior="@string/bottom_sheet_behavior">
+
+        <androidx.core.widget.ContentLoadingProgressBar
+            android:id="@+id/pbSongProgress"
+            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:background="@android:color/darker_gray"
+            android:progress="0" />
+
+        <RelativeLayout
+            android:id="@+id/rlSongContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/design_default_color_primary_dark"
+            android:onClick="@{() -> mainActivity.navigateToEntryFragment()}"
+            android:paddingHorizontal="4dp">
+
+            <ImageView
+                android:id="@+id/ivSongImage"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginHorizontal="4dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_image" />
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/vpSongInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_marginHorizontal="4dp"
+                android:layout_toStartOf="@+id/tvSongPosition"
+                android:layout_toEndOf="@id/ivSongImage" />
+
+            <TextView
+                android:id="@+id/tvSongPosition"
+                style="@style/DefaultTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_marginHorizontal="4dp"
+                android:layout_toStartOf="@id/llSongControls"
+                android:gravity="center"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="@android:color/white"
+                tools:text="0:00" />
+
+            <LinearLayout
+                android:id="@+id/llSongControls"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginHorizontal="4dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/ibPrevSong"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:background="@android:color/transparent"
+                    android:onClick="@{() -> mainActivity.rewindPlayer()}"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_skip_previous"
+                    app:tint="@android:color/white" />
+
+                <ImageButton
+                    android:id="@+id/ibTogglePlaying"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:background="@android:color/transparent"
+                    android:onClick="@{() -> mainActivity.togglePlayer()}"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_play"
+                    app:tint="@android:color/white" />
+
+                <ImageButton
+                    android:id="@+id/ibNextSong"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:background="@android:color/transparent"
+                    android:onClick="@{() -> mainActivity.fastForwardPlayer()}"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_skip"
+                    app:tint="@android:color/white" />
+
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

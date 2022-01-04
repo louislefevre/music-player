@@ -9,7 +9,8 @@ class SwipeSongAdapter(private val onSongClicked: (Song) -> Unit) : BaseSongAdap
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
         val song = getItem(position)
         holder.itemView.apply {
-            tvPrimary.text = context.getString(R.string.song_title, song.title, song.artist)
+            tvSongTitle.text = song.title
+            tvSongArtist.text = song.artist
             setOnClickListener {
                 onSongClicked(song)
             }

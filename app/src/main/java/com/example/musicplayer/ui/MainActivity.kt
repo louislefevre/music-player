@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
+import androidx.core.view.isGone
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.viewpager2.widget.ViewPager2
@@ -20,6 +20,7 @@ import com.example.musicplayer.ui.viewmodels.MainViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.bottom_player.view.*
 import javax.inject.Inject
 
 @AndroidEntryPoint  // If we inject into Android components, they must be annotated with this
@@ -45,9 +46,9 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
         navController = navHostFragment.navController
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            when (destination.id) {
-                R.id.songFragment -> hideBottomBar()
-                else -> showBottomBar()
+            player.isGone = when (destination.id) {
+                R.id.songFragment -> true
+                else -> false
             }
         }
 
@@ -55,8 +56,8 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.globalActionToSongFragment)
         }
 
-        vpSong.adapter = swipeSongAdapter
-        vpSong.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+        player.vpSongInfo.adapter = swipeSongAdapter
+        player.vpSongInfo.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 if (playbackState?.isPlaying == true) {
@@ -67,12 +68,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        ivPlayPause.setOnClickListener {
-            curPlayingSong?.let {
-                mainViewModel.playOrToggleSong(it, true)
-            }
-        }
-
+        setOnClickListeners()
         subscribeToObservers()
 
         val navigateToSong = intent.getBooleanExtra(LAUNCHED_FROM_NOTIFICATION, false)
@@ -81,23 +77,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun hideBottomBar() {
-        ivCurSongImage.isVisible = false
-        vpSong.isVisible = false
-        ivPlayPause.isVisible = false
-    }
+    private fun setOnClickListeners() {
+        player.apply {
+            ibTogglePlaying.setOnClickListener {
+                curPlayingSong?.let {
+                    mainViewModel.playOrToggleSong(it, true)
+                }
+            }
 
-    private fun showBottomBar() {
-        ivCurSongImage.isVisible = true
-        vpSong.isVisible = true
-        ivPlayPause.isVisible = true
-    }
+            ibPrevSong.setOnClickListener {
+                curPlayingSong?.let {
+                    mainViewModel.skipToPreviousSong()
+                }
+            }
 
-    private fun switchViewPagerToCurrentSong(song: Song) {
-        val newItemIndex = swipeSongAdapter.currentList.indexOf(song)
-        if (newItemIndex != -1) {  // If not in the list
-            vpSong.currentItem = newItemIndex
-            curPlayingSong = song
+            ibNextSong.setOnClickListener {
+                curPlayingSong?.let {
+                    mainViewModel.skipToNextSong()
+                }
+            }
         }
     }
 
@@ -110,7 +108,7 @@ class MainActivity : AppCompatActivity() {
                             swipeSongAdapter.submitList(songs)
                             if (songs.isNotEmpty()) {
                                 val coverUrl = (curPlayingSong ?: songs[0]).coverUrl
-                                glide.load(coverUrl).into(ivCurSongImage)
+                                glide.load(coverUrl).into(player.ivSongImage)
                             }
                             switchViewPagerToCurrentSong(curPlayingSong ?: return@observe)
                         }
@@ -123,17 +121,17 @@ class MainActivity : AppCompatActivity() {
 
         mainViewModel.curPlayingSong.observe(this) {
             if (it == null) return@observe
-
             curPlayingSong = it.toSong()
-            glide.load(curPlayingSong?.coverUrl).into(ivCurSongImage)
+            glide.load(curPlayingSong?.coverUrl).into(player.ivSongImage)
             switchViewPagerToCurrentSong(curPlayingSong ?: return@observe)
         }
 
         mainViewModel.playbackState.observe(this) {
             playbackState = it
-
-            val image = if (playbackState?.isPlaying == true) R.drawable.ic_pause else R.drawable.ic_play
-            ivPlayPause.setImageResource(image)
+            player.ibTogglePlaying.setImageResource(
+                if (playbackState?.isPlaying == true) R.drawable.ic_pause
+                else R.drawable.ic_play
+            )
         }
 
         mainViewModel.isConnected.observe(this) {
@@ -152,6 +150,14 @@ class MainActivity : AppCompatActivity() {
                     else -> Unit
                 }
             }
+        }
+    }
+
+    private fun switchViewPagerToCurrentSong(song: Song) {
+        val newItemIndex = swipeSongAdapter.currentList.indexOf(song)
+        if (newItemIndex != -1) {  // If not in the list
+            player.vpSongInfo.currentItem = newItemIndex
+            curPlayingSong = song
         }
     }
 

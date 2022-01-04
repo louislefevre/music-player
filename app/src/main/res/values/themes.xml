@@ -31,4 +31,9 @@
         <item name="fontFamily">@font/poppins_regular</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
+
+    <style name="DefaultTextStyle" parent="android:Widget.TextView">
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 </resources>
