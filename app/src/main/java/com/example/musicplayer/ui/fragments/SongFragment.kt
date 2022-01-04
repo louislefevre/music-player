@@ -97,7 +97,8 @@ class SongFragment : Fragment(R.layout.fragment_song) {
         mainViewModel.playbackState.observe(viewLifecycleOwner) {
             playbackState = it
             ivPlayPauseDetail.setImageResource(
-                if (playbackState?.isPlaying == true) R.drawable.ic_pause else R.drawable.ic_play
+                if (playbackState?.isPlaying == true) R.drawable.ic_pause_circle
+                else R.drawable.ic_play_circle
             )
             seekBar.progress = it?.position?.toInt() ?: 0
         }

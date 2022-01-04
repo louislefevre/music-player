@@ -20,7 +20,7 @@
             style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="4dp"
-            android:background="@android:color/darker_gray"
+            android:background="@color/lightBackground"
             android:progress="0" />
 
         <RelativeLayout
