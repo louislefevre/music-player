@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.musicplayer.R
 import com.example.musicplayer.adapters.SongAdapter
@@ -29,6 +30,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
         songAdapter = songAdapterFactory.create {
             mainViewModel.playOrToggleSong(it)
+            findNavController().navigate(R.id.globalActionToSongFragment)
         }
         setupRecyclerView()
         subscribeToObservers()
