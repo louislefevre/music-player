@@ -27,9 +27,7 @@
             android:id="@+id/rlSongContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/design_default_color_primary_dark"
-            android:onClick="@{() -> mainActivity.navigateToEntryFragment()}"
-            android:paddingHorizontal="4dp">
+            android:background="@color/design_default_color_primary_dark">
 
             <ImageView
                 android:id="@+id/ivSongImage"
@@ -37,8 +35,8 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                android:layout_marginHorizontal="4dp"
                 android:adjustViewBounds="true"
+                android:padding="4dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_image" />
 
@@ -47,9 +45,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
-                android:layout_marginHorizontal="4dp"
                 android:layout_toStartOf="@+id/tvSongPosition"
-                android:layout_toEndOf="@id/ivSongImage" />
+                android:layout_toEndOf="@id/ivSongImage"
+                android:padding="4dp" />
 
             <TextView
                 android:id="@+id/tvSongPosition"
@@ -57,9 +55,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
-                android:layout_marginHorizontal="4dp"
                 android:layout_toStartOf="@id/llSongControls"
                 android:gravity="center"
+                android:padding="4dp"
                 android:textAppearance="?attr/textAppearanceBody2"
                 android:textColor="@android:color/white"
                 tools:text="0:00" />
@@ -70,16 +68,15 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginHorizontal="4dp"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="4dp">
 
                 <ImageButton
                     android:id="@+id/ibPrevSong"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:background="@android:color/transparent"
-                    android:onClick="@{() -> mainActivity.rewindPlayer()}"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_skip_previous"
                     app:tint="@android:color/white" />
@@ -89,7 +86,6 @@
                     android:layout_width="42dp"
                     android:layout_height="42dp"
                     android:background="@android:color/transparent"
-                    android:onClick="@{() -> mainActivity.togglePlayer()}"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_play"
                     app:tint="@android:color/white" />
@@ -99,7 +95,6 @@
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:background="@android:color/transparent"
-                    android:onClick="@{() -> mainActivity.fastForwardPlayer()}"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_skip"
                     app:tint="@android:color/white" />

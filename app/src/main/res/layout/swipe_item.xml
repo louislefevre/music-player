@@ -7,6 +7,7 @@
 
     <TextView
         android:id="@+id/tvSongTitle"
+        style="@style/DefaultTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ellipsize="marquee"
@@ -19,6 +20,7 @@
 
     <TextView
         android:id="@+id/tvSongArtist"
+        style="@style/DefaultTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ellipsize="marquee"
