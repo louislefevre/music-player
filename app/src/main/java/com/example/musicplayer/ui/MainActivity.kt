@@ -15,6 +15,7 @@ import com.example.musicplayer.data.entities.Song
 import com.example.musicplayer.exoplayer.extensions.isPlaying
 import com.example.musicplayer.exoplayer.extensions.toSong
 import com.example.musicplayer.misc.Constants.LAUNCHED_FROM_NOTIFICATION
+import com.example.musicplayer.misc.FormatUtil.formatDuration
 import com.example.musicplayer.misc.Status.*
 import com.example.musicplayer.ui.viewmodels.MainViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -132,6 +133,19 @@ class MainActivity : AppCompatActivity() {
                 if (playbackState?.isPlaying == true) R.drawable.ic_pause
                 else R.drawable.ic_play
             )
+        }
+
+        mainViewModel.curPlayerPosition.observe(this) {
+            player.apply {
+                pbSongProgress.progress = it.toInt()
+                tvSongPosition.text = formatDuration(it)
+            }
+        }
+
+        mainViewModel.curSongDuration.observe(this) {
+            player.apply {
+                pbSongProgress.max = it.toInt()
+            }
         }
 
         mainViewModel.isConnected.observe(this) {

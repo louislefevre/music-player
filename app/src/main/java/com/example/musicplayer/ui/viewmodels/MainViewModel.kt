@@ -5,14 +5,20 @@ import android.support.v4.media.MediaMetadataCompat.METADATA_KEY_MEDIA_ID
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.musicplayer.data.entities.Song
+import com.example.musicplayer.exoplayer.MusicService
 import com.example.musicplayer.exoplayer.MusicServiceConnection
+import com.example.musicplayer.exoplayer.extensions.currentPlaybackPosition
 import com.example.musicplayer.exoplayer.extensions.isPlayEnabled
 import com.example.musicplayer.exoplayer.extensions.isPlaying
 import com.example.musicplayer.exoplayer.extensions.isPrepared
+import com.example.musicplayer.misc.Constants
 import com.example.musicplayer.misc.Constants.MEDIA_ROOT_ID
 import com.example.musicplayer.misc.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,6 +26,12 @@ class MainViewModel @Inject constructor(private val musicServiceConnection: Musi
 
     private val _mediaItems = MutableLiveData<Resource<List<Song>>>()
     val mediaItems: LiveData<Resource<List<Song>>> = _mediaItems
+
+    private val _curPlayerPosition = MutableLiveData<Long>()
+    val curPlayerPosition: LiveData<Long> = _curPlayerPosition
+
+    private val _curSongDuration = MutableLiveData<Long>()
+    val curSongDuration: LiveData<Long> = _curSongDuration
 
     val isConnected = musicServiceConnection.isConnected
     val networkError = musicServiceConnection.networkError
@@ -43,6 +55,7 @@ class MainViewModel @Inject constructor(private val musicServiceConnection: Musi
                 _mediaItems.postValue(Resource.success(items))
             }
         })
+        updateCurrentPlayerPosition()
     }
 
     fun playOrToggleSong(mediaItem: Song, toggle: Boolean = false) {
@@ -77,5 +90,19 @@ class MainViewModel @Inject constructor(private val musicServiceConnection: Musi
     override fun onCleared() {
         super.onCleared()
         musicServiceConnection.unsubscribe(MEDIA_ROOT_ID, object : MediaBrowserCompat.SubscriptionCallback() {})
+    }
+
+    private fun updateCurrentPlayerPosition() {
+        viewModelScope.launch {
+            // Coroutine is cancelled once VM host is destroyed
+            while (true) {
+                val pos = playbackState.value?.currentPlaybackPosition ?: 0L
+                if (curPlayerPosition.value != pos) {
+                    _curPlayerPosition.postValue(pos)
+                    _curSongDuration.postValue(MusicService.curSongDuration)
+                }
+                delay(Constants.UPDATE_PLAYER_POSITION_INTERVAL)
+            }
+        }
     }
 }
