@@ -1,7 +1,9 @@
 package com.example.musicplayer.ui.fragments
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -10,21 +12,27 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.musicplayer.R
 import com.example.musicplayer.adapters.SongAdapter
 import com.example.musicplayer.adapters.SongAdapterFactory
+import com.example.musicplayer.databinding.FragmentHomeBinding
 import com.example.musicplayer.misc.Status
 import com.example.musicplayer.ui.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_home.allSongsProgressBar
-import kotlinx.android.synthetic.main.fragment_home.rvAllSongs
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
+    private lateinit var binding: FragmentHomeBinding
     private val mainViewModel: MainViewModel by activityViewModels()
 
     @Inject
     lateinit var songAdapterFactory: SongAdapterFactory
     lateinit var songAdapter: SongAdapter
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -36,7 +44,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         subscribeToObservers()
     }
 
-    private fun setupRecyclerView() = rvAllSongs.apply {
+    private fun setupRecyclerView() = binding.rvAllSongs.apply {
         adapter = songAdapter
         layoutManager = LinearLayoutManager(requireContext())
     }
@@ -45,12 +53,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         mainViewModel.mediaItems.observe(viewLifecycleOwner) { songs ->
             when (songs.status) {
                 Status.SUCCESS -> {
-                    allSongsProgressBar.isVisible = false
+                    binding.allSongsProgressBar.isVisible = false
                     songs.data?.let {
                         songAdapter.submitList(it)
                     }
                 }
-                Status.LOADING -> allSongsProgressBar.isVisible = true
+                Status.LOADING -> binding.allSongsProgressBar.isVisible = true
                 Status.ERROR -> Unit
             }
         }

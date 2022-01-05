@@ -1,34 +1,55 @@
 package com.example.musicplayer.adapters
 
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.postDelayed
-import com.example.musicplayer.R
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.example.musicplayer.data.entities.Song
+import com.example.musicplayer.databinding.SwipeItemBinding
 import com.example.musicplayer.misc.Constants.MARQUEE_INITIAL_DELAY
-import kotlinx.android.synthetic.main.swipe_item.view.*
 
-class SwipeSongAdapter(private val onSongClicked: (Song) -> Unit) : BaseSongAdapter(R.layout.swipe_item) {
+class SwipeSongAdapter(private val onSongClicked: (Song) -> Unit) :
+    ListAdapter<Song, SwipeSongAdapter.SongViewHolder>(DiffCallback()) {
 
-    override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SwipeSongAdapter.SongViewHolder {
+        val binding = SwipeItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return SongViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: SwipeSongAdapter.SongViewHolder, position: Int) {
         val song = getItem(position)
-        holder.itemView.apply {
-            tvSongTitle.apply {
-                text = song.title
-                setupTextViewMarquee(this)
+        holder.itemView.setOnClickListener {
+            onSongClicked(song)
+        }
+        holder.bind(song)
+    }
+
+    inner class SongViewHolder(private val binding: SwipeItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(song: Song) {
+            binding.apply {
+                tvSongTitle.apply {
+                    text = song.title
+                    setupTextViewMarquee(this)
+                }
+                tvSongArtist.apply {
+                    text = song.artist
+                    setupTextViewMarquee(this)
+                }
             }
-            tvSongArtist.apply {
-                text = song.artist
-                setupTextViewMarquee(this)
-            }
-            setOnClickListener {
-                onSongClicked(song)
+        }
+
+        private fun setupTextViewMarquee(textView: TextView) {
+            textView.postDelayed(MARQUEE_INITIAL_DELAY) {
+                textView.isSelected = true
             }
         }
     }
 
-    private fun setupTextViewMarquee(textView: TextView) {
-        textView.postDelayed(MARQUEE_INITIAL_DELAY) {
-            textView.isSelected = true
-        }
+    private class DiffCallback : DiffUtil.ItemCallback<Song>() {
+        override fun areItemsTheSame(oldItem: Song, newItem: Song) = oldItem.mediaId == newItem.mediaId
+        override fun areContentsTheSame(oldItem: Song, newItem: Song) = oldItem.hashCode() == newItem.hashCode()
     }
 }
