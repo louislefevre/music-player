@@ -1,7 +1,6 @@
 package com.example.musicplayer.ui
 
 import android.os.Bundle
-import android.support.v4.media.session.PlaybackStateCompat
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isGone
@@ -23,23 +22,16 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-@AndroidEntryPoint  // If we inject into Android components, they must be annotated with this
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityMainBinding
-
-    private val mainViewModel: MainViewModel by viewModels()
-
-    private lateinit var navController: NavController
-
-    lateinit var swipeSongAdapter: SwipeSongAdapter
 
     @Inject
     lateinit var glide: RequestManager
-
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var navController: NavController
+    private lateinit var swipeSongAdapter: SwipeSongAdapter
+    private val mainViewModel: MainViewModel by viewModels()
     private var curPlayingSong: Song? = null
-
-    private var playbackState: PlaybackStateCompat? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,9 +121,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         mainViewModel.playbackState.observe(this) {
-            playbackState = it
             binding.player.ibTogglePlaying.setImageResource(
-                if (playbackState?.isPlaying == true) R.drawable.ic_pause
+                if (it?.isPlaying == true) R.drawable.ic_pause
                 else R.drawable.ic_play
             )
         }

@@ -21,12 +21,11 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
-    private lateinit var binding: FragmentHomeBinding
-    private val mainViewModel: MainViewModel by activityViewModels()
-
     @Inject
     lateinit var songAdapterFactory: SongAdapterFactory
-    lateinit var songAdapter: SongAdapter
+    private lateinit var songAdapter: SongAdapter
+    private lateinit var binding: FragmentHomeBinding
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -36,17 +35,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         songAdapter = songAdapterFactory.create {
             mainViewModel.playOrToggleSong(it)
             findNavController().navigate(R.id.globalActionToSongFragment)
         }
-        setupRecyclerView()
-        subscribeToObservers()
-    }
+        binding.rvAllSongs.apply {
+            adapter = songAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
 
-    private fun setupRecyclerView() = binding.rvAllSongs.apply {
-        adapter = songAdapter
-        layoutManager = LinearLayoutManager(requireContext())
+        subscribeToObservers()
     }
 
     private fun subscribeToObservers() {

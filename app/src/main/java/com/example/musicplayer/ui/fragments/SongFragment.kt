@@ -1,7 +1,6 @@
 package com.example.musicplayer.ui.fragments
 
 import android.os.Bundle
-import android.support.v4.media.session.PlaybackStateCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,14 +24,9 @@ class SongFragment : Fragment(R.layout.fragment_song) {
 
     @Inject
     lateinit var glide: RequestManager
-
     private lateinit var binding: FragmentSongBinding
     private val mainViewModel: MainViewModel by activityViewModels()
-
     private var curPlayingSong: Song? = null
-
-    private var playbackState: PlaybackStateCompat? = null
-
     private var shouldUpdateSeekbar = true
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -43,8 +37,11 @@ class SongFragment : Fragment(R.layout.fragment_song) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setOnClickListeners()
         subscribeToObservers()
+    }
 
+    private fun setOnClickListeners() {
         binding.ivPlayPauseDetail.setOnClickListener {
             curPlayingSong?.let { song ->
                 mainViewModel.playOrToggleSong(song, true)
@@ -104,9 +101,8 @@ class SongFragment : Fragment(R.layout.fragment_song) {
         }
 
         mainViewModel.playbackState.observe(viewLifecycleOwner) {
-            playbackState = it
             binding.ivPlayPauseDetail.setImageResource(
-                if (playbackState?.isPlaying == true) R.drawable.ic_pause_circle
+                if (it?.isPlaying == true) R.drawable.ic_pause_circle
                 else R.drawable.ic_play_circle
             )
             binding.seekBar.progress = it?.position?.toInt() ?: 0

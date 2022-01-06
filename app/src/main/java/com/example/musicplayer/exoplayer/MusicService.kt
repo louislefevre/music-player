@@ -34,29 +34,23 @@ class MusicService : MediaBrowserServiceCompat() {
 
     @Inject
     lateinit var dataSourceFactory: DefaultDataSource.Factory
-
     @Inject
     lateinit var exoPlayer: ExoPlayer
-
     @Inject
     lateinit var firebaseMusicSource: FirebaseMusicSource
 
+    private lateinit var mediaSession: MediaSessionCompat
+    private lateinit var mediaSessionConnector: MediaSessionConnector
     private lateinit var musicNotificationManager: MusicNotificationManager
+    private lateinit var musicPlayerEventListener: MusicPlayerEventListener
 
     // Scope deals with cancellation of coroutines (when service dies, coroutines are cancelled)
     private val serviceJob = Job()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
 
-    private lateinit var mediaSession: MediaSessionCompat
-    private lateinit var mediaSessionConnector: MediaSessionConnector
-
     var isForegroundService = false
-
     private var curPlayingSong: MediaMetadataCompat? = null
-
     private var isPlayerInitialised = false
-
-    private lateinit var musicPlayerEventListener: MusicPlayerEventListener
 
     companion object {
         var curSongDuration = 0L
