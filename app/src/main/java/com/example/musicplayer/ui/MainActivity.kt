@@ -61,11 +61,7 @@ class MainActivity : AppCompatActivity() {
             registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
-                    if (playbackState?.isPlaying == true) {
-                        mainViewModel.playOrToggleSong(swipeSongAdapter.currentList[position])
-                    } else {
-                        curPlayingSong = swipeSongAdapter.currentList[position]
-                    }
+                    mainViewModel.playOrToggleSong(swipeSongAdapter.currentList[position])
                 }
             })
         }
