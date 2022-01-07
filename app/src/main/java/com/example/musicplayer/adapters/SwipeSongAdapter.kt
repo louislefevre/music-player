@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.postDelayed
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.musicplayer.data.entities.Song
@@ -12,7 +11,7 @@ import com.example.musicplayer.databinding.SwipeItemBinding
 import com.example.musicplayer.misc.Constants.MARQUEE_INITIAL_DELAY
 
 class SwipeSongAdapter(private val onSongClicked: (Song) -> Unit) :
-    ListAdapter<Song, SwipeSongAdapter.SongViewHolder>(DiffCallback()) {
+    ListAdapter<Song, SwipeSongAdapter.SongViewHolder>(SongDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SwipeSongAdapter.SongViewHolder {
         val binding = SwipeItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -46,10 +45,5 @@ class SwipeSongAdapter(private val onSongClicked: (Song) -> Unit) :
                 textView.isSelected = true
             }
         }
-    }
-
-    private class DiffCallback : DiffUtil.ItemCallback<Song>() {
-        override fun areItemsTheSame(oldItem: Song, newItem: Song) = oldItem.mediaId == newItem.mediaId
-        override fun areContentsTheSame(oldItem: Song, newItem: Song) = oldItem.hashCode() == newItem.hashCode()
     }
 }
