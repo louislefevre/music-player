@@ -8,6 +8,7 @@ import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.media.MediaBrowserServiceCompat
+import com.example.musicplayer.data.datastore.DataStoreManager
 import com.example.musicplayer.exoplayer.callbacks.MusicPlaybackPreparer
 import com.example.musicplayer.exoplayer.callbacks.MusicPlayerEventListener
 import com.example.musicplayer.exoplayer.callbacks.MusicPlayerNotificationListener
@@ -24,6 +25,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,8 +36,13 @@ class MusicService : MediaBrowserServiceCompat() {
 
     @Inject
     lateinit var dataSourceFactory: DefaultDataSource.Factory
+
+    @Inject
+    lateinit var dataStore: DataStoreManager
+
     @Inject
     lateinit var exoPlayer: ExoPlayer
+
     @Inject
     lateinit var firebaseMusicSource: FirebaseMusicSource
 
@@ -49,6 +56,7 @@ class MusicService : MediaBrowserServiceCompat() {
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
 
     var isForegroundService = false
+    private var recentSong: MediaBrowserCompat.MediaItem? = null
     private var curPlayingSong: MediaMetadataCompat? = null
     private var isPlayerInitialised = false
 
@@ -61,6 +69,7 @@ class MusicService : MediaBrowserServiceCompat() {
         super.onCreate()
         serviceScope.launch {
             firebaseMusicSource.fetchMediaData()
+            recentSong = dataStore.getRecentSongFromPreferences().first()
         }
 
         val activityIntent = packageManager?.getLaunchIntentForPackage(packageName)?.let {
@@ -86,9 +95,9 @@ class MusicService : MediaBrowserServiceCompat() {
             }
         }
 
-        val musicPlayBackPreparer = MusicPlaybackPreparer(firebaseMusicSource) {
-            curPlayingSong = it
-            preparePlayer(firebaseMusicSource.songs, it, true)
+        val musicPlayBackPreparer = MusicPlaybackPreparer(firebaseMusicSource, recentSong) { item, startPos ->
+            curPlayingSong = item
+            preparePlayer(firebaseMusicSource.songs, item, true, startPos)
         }
 
         mediaSessionConnector = MediaSessionConnector(mediaSession)
@@ -101,15 +110,21 @@ class MusicService : MediaBrowserServiceCompat() {
         musicNotificationManager.showNotification(exoPlayer)
     }
 
-    private fun preparePlayer(songs: List<MediaMetadataCompat>, itemToPlay: MediaMetadataCompat?, playNow: Boolean) {
+    private fun preparePlayer(
+        songs: List<MediaMetadataCompat>,
+        itemToPlay: MediaMetadataCompat?,
+        playNow: Boolean,
+        startPositionMs: Long
+    ) {
         val curSongIndex = if (curPlayingSong == null) 0 else songs.indexOf(itemToPlay)
         exoPlayer.setMediaSource(firebaseMusicSource.asMediaSource(dataSourceFactory))
         exoPlayer.prepare()
-        exoPlayer.seekTo(curSongIndex, 0)
+        exoPlayer.seekTo(curSongIndex, startPositionMs)
         exoPlayer.playWhenReady = playNow
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
+        saveRecentSongToDataStore()
         super.onTaskRemoved(rootIntent)
         exoPlayer.stop()
     }
@@ -135,7 +150,8 @@ class MusicService : MediaBrowserServiceCompat() {
                             preparePlayer(
                                 firebaseMusicSource.songs,
                                 firebaseMusicSource.songs[0],
-                                false
+                                false,
+                                C.TIME_UNSET
                             )
                             isPlayerInitialised = true
                         }
@@ -148,6 +164,16 @@ class MusicService : MediaBrowserServiceCompat() {
                 if (!resultsSent) {
                     result.detach()
                 }
+            }
+        }
+    }
+
+    private fun saveRecentSongToDataStore() {
+        val desc = curPlayingSong?.description
+        val pos = exoPlayer.currentPosition
+        serviceScope.launch {
+            if (desc != null) {
+                dataStore.saveRecentSongToPreferences(desc, pos)
             }
         }
     }
