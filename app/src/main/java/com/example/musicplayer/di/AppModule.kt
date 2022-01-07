@@ -5,6 +5,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.example.musicplayer.R
+import com.example.musicplayer.data.datastore.DataStoreManager
 import com.example.musicplayer.exoplayer.MusicServiceConnection
 import dagger.Module
 import dagger.Provides
@@ -18,6 +19,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideDataStoreManager(@ApplicationContext context: Context) =
+        DataStoreManager(context)
 
     @Provides
     @Singleton  // Ensures only one Glide instance is created (a singleton)
